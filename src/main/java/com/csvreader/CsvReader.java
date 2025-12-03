@@ -66,16 +66,6 @@ public class CsvReader implements AutoCloseable {
     private boolean initialized = false;
     private boolean closed = false;
     /**
-     * Double up the text qualifier to represent an occurance of the text qualifier.
-     */
-    public static final int ESCAPE_MODE_DOUBLED = 1;
-    /**
-     * Use a backslash character before the text qualifier to represent an occurance
-     * of the text qualifier.
-     */
-    public static final int ESCAPE_MODE_BACKSLASH = 2;
-
-    /**
      * Creates a {@link main.java.com.csvreader.CsvReader CsvReader} object using a
      * file as the data source.
      * 
@@ -239,24 +229,6 @@ public class CsvReader implements AutoCloseable {
     }
 
     /**
-     * Gets the character to use as a text qualifier in the data.
-     * 
-     * @return The character to use as a text qualifier in the data.
-     */
-    public char getTextQualifier() {
-        return userSettings.textQualifier;
-    }
-
-    /**
-     * Sets the character to use as a text qualifier in the data.
-     * 
-     * @param textQualifier The character to use as a text qualifier in the data.
-     */
-    public void setTextQualifier(char textQualifier) {
-        userSettings.textQualifier = textQualifier;
-    }
-
-    /**
      * Whether text qualifiers will be used while parsing or not.
      * 
      * @return Whether text qualifiers will be used while parsing or not.
@@ -309,36 +281,6 @@ public class CsvReader implements AutoCloseable {
      */
     public void setUseComments(boolean useComments) {
         userSettings.useComments = useComments;
-    }
-
-    /**
-     * Gets the current way to escape an occurance of the text qualifier inside
-     * qualified data.
-     * 
-     * @return The current way to escape an occurance of the text qualifier
-     *         inside qualified data.
-     */
-    public int getEscapeMode() {
-        return userSettings.escapeMode;
-    }
-
-    /**
-     * Sets the current way to escape an occurance of the text qualifier inside
-     * qualified data.
-     * 
-     * @param escapeMode The way to escape an occurance of the text qualifier inside
-     *                   qualified data.
-     * @exception IllegalArgumentException When an illegal value is specified for
-     *                                     escapeMode.
-     */
-    public void setEscapeMode(int escapeMode) throws IllegalArgumentException {
-        if (escapeMode != ESCAPE_MODE_DOUBLED
-                && escapeMode != ESCAPE_MODE_BACKSLASH) {
-            throw new IllegalArgumentException(
-                    "Parameter escapeMode must be a valid value.");
-        }
-
-        userSettings.escapeMode = escapeMode;
     }
 
     public boolean getSkipEmptyRecords() {
@@ -539,7 +481,7 @@ public class CsvReader implements AutoCloseable {
 
                     char currentLetter = dataBuffer.buffer[dataBuffer.position];
 
-                    if (userSettings.useTextQualifier && currentLetter == userSettings.textQualifier) {
+                    if (userSettings.useTextQualifier && currentLetter == userSettings.textQualifier()) {
                         // this will be a text qualified column, so
                         // we need to set startedWithQualifier to make it
                         // enter the seperate branch to handle text
@@ -553,9 +495,9 @@ public class CsvReader implements AutoCloseable {
                         startedWithQualifier = true;
                         boolean lastLetterWasQualifier = false;
 
-                        char escapeChar = userSettings.textQualifier;
+                        char escapeChar = userSettings.textQualifier();
 
-                        if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
+                        if (userSettings.escapeMode() == EscapeMode.BACKSLASH) {
                             escapeChar = Letters.BACKSLASH;
                         }
 
@@ -636,20 +578,20 @@ public class CsvReader implements AutoCloseable {
                                     } else {
                                         dataBuffer.columnStart = dataBuffer.position + 1;
                                     }
-                                } else if (currentLetter == userSettings.textQualifier) {
+                                } else if (currentLetter == userSettings.textQualifier()) {
                                     if (lastLetterWasEscape) {
                                         lastLetterWasEscape = false;
                                         lastLetterWasQualifier = false;
                                     } else {
                                         updateCurrentValue();
 
-                                        if (userSettings.escapeMode == ESCAPE_MODE_DOUBLED) {
+                                        if (userSettings.escapeMode() == EscapeMode.DOUBLED) {
                                             lastLetterWasEscape = true;
                                         }
 
                                         lastLetterWasQualifier = true;
                                     }
-                                } else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH
+                                } else if (userSettings.escapeMode() == EscapeMode.BACKSLASH
                                         && lastLetterWasEscape) {
                                     switch (currentLetter) {
                                         case 'n':
@@ -859,7 +801,7 @@ public class CsvReader implements AutoCloseable {
                                 }
 
                                 if (!userSettings.useTextQualifier
-                                        && userSettings.escapeMode == ESCAPE_MODE_BACKSLASH
+                                        && userSettings.escapeMode() == EscapeMode.BACKSLASH
                                         && currentLetter == Letters.BACKSLASH) {
                                     if (lastLetterWasBackslash) {
                                         lastLetterWasBackslash = false;
@@ -914,7 +856,7 @@ public class CsvReader implements AutoCloseable {
                                     } else {
                                         dataBuffer.columnStart = dataBuffer.position + 1;
                                     }
-                                } else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH
+                                } else if (userSettings.escapeMode() == EscapeMode.BACKSLASH
                                         && lastLetterWasBackslash) {
                                     switch (currentLetter) {
                                         case 'n':

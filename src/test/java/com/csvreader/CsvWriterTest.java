@@ -149,7 +149,7 @@ class CsvWriterTest {
 		String data = "\"some \\stuff\"";
 
 		CsvReader reader = CsvReader.parse(data);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("some stuff", reader.get(0));
 		Assertions.assertEquals(0L, reader.getCurrentRecord());
@@ -222,19 +222,17 @@ class CsvWriterTest {
 		reader.setComment('!');
 		Assertions.assertEquals('!', reader.getComment());
 
-		Assertions.assertEquals(CsvReader.ESCAPE_MODE_DOUBLED, reader
-				.getEscapeMode());
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
-		Assertions.assertEquals(CsvReader.ESCAPE_MODE_BACKSLASH, reader
-				.getEscapeMode());
+		Assertions.assertEquals(EscapeMode.DOUBLED, reader.userSettings().escapeMode());
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
+		Assertions.assertEquals(EscapeMode.BACKSLASH, reader.userSettings().escapeMode());
 
 		Assertions.assertEquals('\0', reader.getRecordDelimiter());
 		reader.setRecordDelimiter(';');
 		Assertions.assertEquals(';', reader.getRecordDelimiter());
 
-		Assertions.assertEquals('\"', reader.getTextQualifier());
-		reader.setTextQualifier('\'');
-		Assertions.assertEquals('\'', reader.getTextQualifier());
+		Assertions.assertEquals('\"', reader.userSettings().textQualifier());
+		reader.userSettings().withTextQualifier('\'');
+		Assertions.assertEquals('\'', reader.userSettings().textQualifier());
 
 		Assertions.assertTrue(reader.getTrimWhitespace());
 		reader.setTrimWhitespace(false);
@@ -256,7 +254,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("Chicane", reader.get(0));
 		Assertions.assertEquals("Love on the Run", reader.get(1));
@@ -281,7 +279,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("double\\\\double backslash", reader.get(0));
 		Assertions.assertEquals(0L, reader.getCurrentRecord());
@@ -296,7 +294,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("some stuff", reader.get(0));
 		Assertions.assertEquals(0L, reader.getCurrentRecord());
@@ -310,7 +308,7 @@ class CsvWriterTest {
 		String data = "\"line 1\\nline 2\",\"line 1\\\nline 2\"";
 
 		CsvReader reader = CsvReader.parse(data);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("line 1\nline 2", reader.get(0));
 		Assertions.assertEquals("line 1\nline 2", reader.get(1));
@@ -326,7 +324,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("line 1\nline 2", reader.get(0));
 		Assertions.assertEquals("line 1\nline 2", reader.get(1));
@@ -388,7 +386,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		reader.setRecordDelimiter('i');
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("Chicane", reader.get(0));
@@ -464,7 +462,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(true);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions
 				.assertEquals("\n\r\t\b\f\u001B\u000B\u0007zAAAAA", reader
@@ -484,7 +482,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions
 				.assertEquals("\n\r\t\b\f\u001B\u000B\u0007zAAAAA", reader
@@ -504,7 +502,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(true);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("\u00FA\u0AFA\u00FA\u0AFA", reader.get(0));
 		Assertions.assertEquals("\"\\xfa\\u0afa\\xFA\\u0AFA\"", reader
@@ -521,7 +519,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data);
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals("\u00FA\u0AFA\u00FA\u0AFA", reader.get(0));
 		Assertions.assertEquals("\\xfa\\u0afa\\xFA\\u0AFA", reader.getRawRecord());
@@ -730,11 +728,9 @@ class CsvWriterTest {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		CsvWriter writer = new CsvWriter(stream, ',', Charset
 				.forName("ISO-8859-1"));
-		Assertions.assertEquals(CsvWriter.ESCAPE_MODE_DOUBLED, writer
-				.getEscapeMode());
-		writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
-		Assertions.assertEquals(CsvWriter.ESCAPE_MODE_BACKSLASH, writer
-				.getEscapeMode());
+		Assertions.assertEquals(EscapeMode.DOUBLED, writer.userSettings().escapeMode());
+		writer.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
+		Assertions.assertEquals(EscapeMode.BACKSLASH, writer.userSettings().escapeMode());
 		writer.write("1,2");
 		writer.write("3");
 		writer.write("blah \"some stuff in quotes\"");
@@ -763,7 +759,7 @@ class CsvWriterTest {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		CsvWriter writer = new CsvWriter(stream, ',', Charset
 				.forName("ISO-8859-1"));
-		writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+		writer.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		writer.setUseTextQualifier(false);
 		writer.write("1,2");
 		writer.write("3");
@@ -956,31 +952,30 @@ class CsvWriterTest {
 	@Test
 	void test88() throws Exception {
 		try {
-			new CsvReader((String) null, ',', Charset
-					.forName("ISO-8859-1"));
+			CsvReader reader = new CsvReader((String) null, ',', Charset.forName("ISO-8859-1"));
+			reader.close();
 		} catch (Exception ex) {
-			assertException(new IllegalArgumentException(
-					"Parameter fileName can not be null."), ex);
+			assertException(new IllegalArgumentException("Parameter fileName can not be null."), ex);
 		}
 	}
 
 	@Test
 	void test89() throws Exception {
 		try {
-			new CsvReader("temp.csv", ',', null);
+			CsvReader reader = new CsvReader("temp.csv", ',', null);
+			reader.close();
 		} catch (Exception ex) {
-			assertException(new IllegalArgumentException(
-					"Parameter charset can not be null."), ex);
+			assertException(new IllegalArgumentException("Parameter charset can not be null."), ex);
 		}
 	}
 
 	@Test
 	void test90() throws Exception {
 		try {
-			new CsvReader((Reader) null, ',');
+			CsvReader reader = new CsvReader((Reader) null, ',');
+			reader.close();
 		} catch (Exception ex) {
-			assertException(new IllegalArgumentException(
-					"Parameter inputStream can not be null."), ex);
+			assertException(new IllegalArgumentException("Parameter inputStream can not be null."), ex);
 		}
 	}
 
@@ -1102,29 +1097,24 @@ class CsvWriterTest {
 		byte[] buffer;
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		CsvWriter writer = new CsvWriter(stream, '\t', Charset
-				.forName("ISO-8859-1"));
-		Assertions.assertEquals('\"', writer.getTextQualifier());
-		writer.setTextQualifier('\'');
-		Assertions.assertEquals('\'', writer.getTextQualifier());
+		try (CsvWriter writer = new CsvWriter(stream, '\t', Charset.forName("ISO-8859-1"))) {
+			Assertions.assertEquals('\"', writer.userSettings().textQualifier());
+			writer.userSettings().withTextQualifier('\'');
+			Assertions.assertEquals('\'', writer.userSettings().textQualifier());
 
-		writer.write("1,2");
-		writer.write("3");
-		writer.write("blah \"some stuff in quotes\"");
-		writer.write("blah \'some stuff in quotes\'");
-		writer.endRecord();
-		writer.close();
+			writer.write("1,2");
+			writer.write("3");
+			writer.write("blah \"some stuff in quotes\"");
+			writer.write("blah \'some stuff in quotes\'");
+			writer.endRecord();
+		}
 
 		buffer = stream.toByteArray();
 		stream.close();
 
-		String data = StandardCharsets.ISO_8859_1.decode(
-				ByteBuffer.wrap(buffer)).toString();
-
-		Assertions
-				.assertEquals(
-						"1,2\t3\tblah \"some stuff in quotes\"\t\'blah \'\'some stuff in quotes\'\'\'\r\n",
-						data);
+		String data = StandardCharsets.ISO_8859_1.decode(ByteBuffer.wrap(buffer)).toString();
+		Assertions.assertEquals("1,2\t3\tblah \"some stuff in quotes\"\t\'blah \'\'some stuff in quotes\'\'\'\r\n",
+				data);
 	}
 
 	@Test
@@ -1235,7 +1225,7 @@ class CsvWriterTest {
 		writer.write("#123");
 		writer.endRecord();
 
-		writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+		writer.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		writer.setUseTextQualifier(false);
 
 		writer.write("#123");
@@ -1263,7 +1253,7 @@ class CsvWriterTest {
 				.forName("ISO-8859-1"));
 		writer.setRecordDelimiter(';');
 		writer.setUseTextQualifier(false);
-		writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+		writer.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 
 		writer.write("1;2");
 		writer.endRecord();
@@ -1285,7 +1275,7 @@ class CsvWriterTest {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try (CsvWriter writer = new CsvWriter(stream, ',', Charset.forName("ISO-8859-1"))) {
 			writer.setUseTextQualifier(false);
-			writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+			writer.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 
 			writer.write("1,\\\r\n2");
 			writer.endRecord();
@@ -1312,7 +1302,7 @@ class CsvWriterTest {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		CsvWriter writer = new CsvWriter(stream, ',', Charset
 				.forName("ISO-8859-1"));
-		writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+		writer.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 
 		writer.write("1,\\2");
 		writer.endRecord();
@@ -1510,7 +1500,7 @@ class CsvWriterTest {
 
 		CsvReader reader = CsvReader.parse(data.toString());
 		reader.setUseTextQualifier(false);
-		reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+		reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
 		Assertions.assertTrue(reader.readRecord());
 		Assertions.assertEquals(generateString('\b', 10000), reader.get(0));
 		Assertions.assertFalse(reader.readRecord());

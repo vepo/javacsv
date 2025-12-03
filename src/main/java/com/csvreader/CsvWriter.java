@@ -46,18 +46,6 @@ public class CsvWriter implements AutoCloseable {
     private String systemRecordDelimiter = System.getProperty("line.separator");
 
     /**
-     * Double up the text qualifier to represent an occurrence of the text
-     * qualifier.
-     */
-    public static final int ESCAPE_MODE_DOUBLED = 1;
-
-    /**
-     * Use a backslash character before the text qualifier to represent an
-     * occurrence of the text qualifier.
-     */
-    public static final int ESCAPE_MODE_BACKSLASH = 2;
-
-    /**
      * Creates a {@link main.java.com.csvreader.CsvWriter CsvWriter} object using a
      * file
      * as the data destination.
@@ -143,24 +131,6 @@ public class CsvWriter implements AutoCloseable {
     }
 
     /**
-     * Gets the character to use as a text qualifier in the data.
-     * 
-     * @return The character to use as a text qualifier in the data.
-     */
-    public char getTextQualifier() {
-        return userSettings.textQualifier;
-    }
-
-    /**
-     * Sets the character to use as a text qualifier in the data.
-     * 
-     * @param textQualifier The character to use as a text qualifier in the data.
-     */
-    public void setTextQualifier(char textQualifier) {
-        userSettings.textQualifier = textQualifier;
-    }
-
-    /**
      * Whether text qualifiers will be used while writing data or not.
      * 
      * @return Whether text qualifiers will be used while writing data or not.
@@ -177,14 +147,6 @@ public class CsvWriter implements AutoCloseable {
      */
     public void setUseTextQualifier(boolean useTextQualifier) {
         userSettings.useTextQualifier = useTextQualifier;
-    }
-
-    public int getEscapeMode() {
-        return userSettings.escapeMode;
-    }
-
-    public void setEscapeMode(int escapeMode) {
-        userSettings.escapeMode = escapeMode;
     }
 
     public void setComment(char comment) {
@@ -225,10 +187,8 @@ public class CsvWriter implements AutoCloseable {
      * @exception IOException Thrown if an error occurs while writing data to the
      *                        destination stream.
      */
-    public void write(String content, boolean preserveSpaces)
-            throws IOException {
+    public void write(String content, boolean preserveSpaces) throws IOException {
         checkClosed();
-
         checkInit();
 
         if (content == null) {
@@ -245,7 +205,7 @@ public class CsvWriter implements AutoCloseable {
             content = content.trim();
         }
 
-        if (!textQualify && userSettings.useTextQualifier && (content.indexOf(userSettings.textQualifier) > -1
+        if (!textQualify && userSettings.useTextQualifier && (content.indexOf(userSettings.textQualifier()) > -1
                 || content.indexOf(userSettings.delimiter()) > -1
                 || (!useCustomRecordDelimiter && (content.indexOf(Letters.LF) > -1 || content.indexOf(Letters.CR) > -1))
                 || (useCustomRecordDelimiter && content.indexOf(userSettings.recordDelimiter) > -1)
@@ -273,23 +233,18 @@ public class CsvWriter implements AutoCloseable {
         }
 
         if (textQualify) {
-            outputStream.write(userSettings.textQualifier);
+            outputStream.write(userSettings.textQualifier());
 
-            if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
+            if (userSettings.escapeMode() == EscapeMode.BACKSLASH) {
                 content = replace(content, Letters.BACKSLASH_PATTERN, Letters.BACKSLASH_ESCAPED);
-                content = replace(content, "" + userSettings.textQualifier,
-                        "" + Letters.BACKSLASH + userSettings.textQualifier);
-            } else {
-                content = replace(content, "" + userSettings.textQualifier,
-                        "" + userSettings.textQualifier + userSettings.textQualifier);
-            }
-        } else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
+            } 
+            content = replace(content, userSettings.textQualifierPattern(), userSettings.textQualifierEscaped());
+        } else if (userSettings.escapeMode() == EscapeMode.BACKSLASH) {
             content = replace(content, Letters.BACKSLASH_PATTERN, Letters.BACKSLASH_ESCAPED);
             content = replace(content, userSettings.delimiterPattern(), userSettings.delimiterEscaped());
 
             if (useCustomRecordDelimiter) {
-                content = replace(content, "" + userSettings.recordDelimiter,
-                        "" + Letters.BACKSLASH + userSettings.recordDelimiter);
+                content = replace(content, "" + userSettings.recordDelimiter, "" + Letters.BACKSLASH + userSettings.recordDelimiter);
             } else {
                 content = replace(content, "" + Letters.CR, "" + Letters.BACKSLASH + Letters.CR);
                 content = replace(content, "" + Letters.LF, "" + Letters.BACKSLASH + Letters.LF);
@@ -307,7 +262,7 @@ public class CsvWriter implements AutoCloseable {
         outputStream.write(content);
 
         if (textQualify) {
-            outputStream.write(userSettings.textQualifier);
+            outputStream.write(userSettings.textQualifier());
         }
 
         firstColumn = false;

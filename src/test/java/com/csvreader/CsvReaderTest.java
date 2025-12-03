@@ -355,7 +355,7 @@ class CsvReaderTest {
         String data = "'bob said, ''Hey!''',2, 3 ";
 
         CsvReader reader = CsvReader.parse(data);
-        reader.setTextQualifier('\'');
+        reader.userSettings().withTextQualifier('\'');
         Assertions.assertTrue(reader.readRecord());
         Assertions.assertEquals("bob said, 'Hey!'", reader.get(0));
         Assertions.assertEquals("2", reader.get(1));
@@ -487,7 +487,7 @@ class CsvReaderTest {
         String data = "\"bob said, \\\"Hey!\\\"\",2, 3 ";
 
         CsvReader reader = CsvReader.parse(data);
-        reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+        reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
         Assertions.assertTrue(reader.readRecord());
         Assertions.assertEquals("bob said, \"Hey!\"", reader.get(0));
         Assertions.assertEquals("2", reader.get(1));
@@ -506,7 +506,7 @@ class CsvReaderTest {
         String data = "\"double\\\"\\\"double quotes\"";
 
         CsvReader reader = CsvReader.parse(data);
-        reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+        reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
         Assertions.assertTrue(reader.readRecord());
         Assertions.assertEquals("double\"\"double quotes", reader.get(0));
         Assertions.assertEquals(0L, reader.getCurrentRecord());
@@ -522,7 +522,7 @@ class CsvReaderTest {
         String data = "\"double\\\\\\\\double backslash\"";
 
         CsvReader reader = CsvReader.parse(data);
-        reader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+        reader.userSettings().withEscapeMode(EscapeMode.BACKSLASH);
         Assertions.assertTrue(reader.readRecord());
         Assertions.assertEquals("double\\\\double backslash", reader.get(0));
         Assertions.assertEquals(0L, reader.getCurrentRecord());
