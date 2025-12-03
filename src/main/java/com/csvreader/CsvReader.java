@@ -604,7 +604,7 @@ public class CsvReader implements AutoCloseable {
                         boolean eatingTrailingJunk = false;
                         boolean lastLetterWasEscape = false;
                         boolean readingComplexEscape = false;
-                        int escape = ComplexEscape.UNICODE;
+                        ComplexEscape escape = ComplexEscape.UNICODE;
                         int escapeLength = 0;
                         char escapeValue = (char) 0;
 
@@ -635,7 +635,7 @@ public class CsvReader implements AutoCloseable {
                                     escapeLength++;
 
                                     switch (escape) {
-                                        case ComplexEscape.UNICODE:
+                                        case UNICODE:
                                             escapeValue *= (char) 16;
                                             escapeValue += hexToDec(currentLetter);
 
@@ -644,7 +644,7 @@ public class CsvReader implements AutoCloseable {
                                             }
 
                                             break;
-                                        case ComplexEscape.OCTAL:
+                                        case OCTAL:
                                             escapeValue *= (char) 8;
                                             escapeValue += (char) (currentLetter - '0');
 
@@ -653,7 +653,7 @@ public class CsvReader implements AutoCloseable {
                                             }
 
                                             break;
-                                        case ComplexEscape.DECIMAL:
+                                        case DECIMAL:
                                             escapeValue *= (char) 10;
                                             escapeValue += (char) (currentLetter - '0');
 
@@ -662,7 +662,7 @@ public class CsvReader implements AutoCloseable {
                                             }
 
                                             break;
-                                        case ComplexEscape.HEX:
+                                        case HEX:
                                             escapeValue *= (char) 16;
                                             escapeValue += hexToDec(currentLetter);
 
@@ -890,7 +890,7 @@ public class CsvReader implements AutoCloseable {
                         dataBuffer.columnStart = dataBuffer.position;
                         boolean lastLetterWasBackslash = false;
                         boolean readingComplexEscape = false;
-                        int escape = ComplexEscape.UNICODE;
+                        ComplexEscape escape = ComplexEscape.UNICODE;
                         int escapeLength = 0;
                         char escapeValue = (char) 0;
 
@@ -919,7 +919,7 @@ public class CsvReader implements AutoCloseable {
                                     escapeLength++;
 
                                     switch (escape) {
-                                        case ComplexEscape.UNICODE:
+                                        case UNICODE:
                                             escapeValue *= (char) 16;
                                             escapeValue += hexToDec(currentLetter);
 
@@ -928,7 +928,7 @@ public class CsvReader implements AutoCloseable {
                                             }
 
                                             break;
-                                        case ComplexEscape.OCTAL:
+                                        case OCTAL:
                                             escapeValue *= (char) 8;
                                             escapeValue += (char) (currentLetter - '0');
 
@@ -937,7 +937,7 @@ public class CsvReader implements AutoCloseable {
                                             }
 
                                             break;
-                                        case ComplexEscape.DECIMAL:
+                                        case DECIMAL:
                                             escapeValue *= (char) 10;
                                             escapeValue += (char) (currentLetter - '0');
 
@@ -946,7 +946,7 @@ public class CsvReader implements AutoCloseable {
                                             }
 
                                             break;
-                                        case ComplexEscape.HEX:
+                                        case HEX:
                                             escapeValue *= (char) 16;
                                             escapeValue += hexToDec(currentLetter);
 
