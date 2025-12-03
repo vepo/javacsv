@@ -28,7 +28,7 @@ class CsvWriterTest {
 
 
 	private static String generateString(char letter, int count) {
-		StringBuffer buffer = new StringBuffer(count);
+		StringBuilder buffer = new StringBuilder(count);
 		for (int i = 0; i < count; i++) {
 			buffer.append(letter);
 		}
@@ -37,47 +37,31 @@ class CsvWriterTest {
 
     @BeforeAll
     static void setup() {
-        // this library was develope in Window
+        // this library was developed in Window
         System.setProperty("line.separator", "\r\n");
     }
 
     @Test
 	void test31() throws Exception {
-		CsvWriter writer = new CsvWriter(new PrintWriter(
-				new OutputStreamWriter(new FileOutputStream("temp.csv"),
-						Charset.forName("UTF-8"))), ',');
-		// writer will trim all whitespace and put this in quotes to preserve
-		// it's existence
-		writer.write(" \t \t");
-		writer.close();
+		try(CsvWriter writer = new CsvWriter(new PrintWriter(
+                    new OutputStreamWriter(new FileOutputStream("temp.csv"),
+                            Charset.forName("UTF-8"))), ',')){
+            // writer will trim all whitespace and put this in quotes to preserve
+            // it's existence
+            writer.write(" \t \t");
+        }
 
-		CsvReader reader = new CsvReader(new InputStreamReader(
-				new FileInputStream("temp.csv"), Charset.forName("UTF-8")));
-		Assertions.assertTrue(reader.readRecord());
-		Assertions.assertEquals("", reader.get(0));
-		Assertions.assertEquals(1, reader.getColumnCount());
-		Assertions.assertEquals(0L, reader.getCurrentRecord());
-		Assertions.assertEquals("\"\"", reader.getRawRecord());
-		Assertions.assertFalse(reader.readRecord());
-		reader.close();
+		try(CsvReader reader = new CsvReader(new InputStreamReader(
+                    new FileInputStream("temp.csv"), Charset.forName("UTF-8")))) {
+            Assertions.assertTrue(reader.readRecord());
+            Assertions.assertEquals("", reader.get(0));
+            Assertions.assertEquals(1, reader.getColumnCount());
+            Assertions.assertEquals(0L, reader.getCurrentRecord());
+            Assertions.assertEquals("\"\"", reader.getRawRecord());
+            Assertions.assertFalse(reader.readRecord());
+        }
 
 		new File("temp.csv").delete();
-	}
-
-	@Test
-	void test32() throws Exception {
-		String data = "\"Mac \"The Knife\" Peter\",\"Boswell, Jr.\"";
-
-		CsvReader reader = CsvReader.parse(data);
-		Assertions.assertTrue(reader.readRecord());
-		Assertions.assertEquals("Mac ", reader.get(0));
-		Assertions.assertEquals("Boswell, Jr.", reader.get(1));
-		Assertions.assertEquals(0L, reader.getCurrentRecord());
-		Assertions.assertEquals(2, reader.getColumnCount());
-		Assertions.assertEquals("\"Mac \"The Knife\" Peter\",\"Boswell, Jr.\"",
-				reader.getRawRecord());
-		Assertions.assertFalse(reader.readRecord());
-		reader.close();
 	}
 
 	@Test

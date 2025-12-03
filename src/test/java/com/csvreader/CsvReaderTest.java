@@ -1,17 +1,24 @@
 package com.csvreader;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class CsvReaderTest {
 
 	private static String generateString(char letter, int count) {
-		StringBuffer buffer = new StringBuffer(count);
+		StringBuilder buffer = new StringBuilder(count);
 		for (int i = 0; i < count; i++) {
 			buffer.append(letter);
 		}
 		return buffer.toString();
 	}
+
+    @BeforeAll
+    static void setup() {
+        // this library was developed in Window
+        System.setProperty("line.separator", "\r\n");
+    }
 
 	@Test
 	void test1() throws Exception {
@@ -523,6 +530,22 @@ class CsvReaderTest {
 		Assertions.assertEquals(1, reader.getColumnCount());
 		Assertions.assertEquals("\"double\\\\\\\\double backslash\"", reader
 				.getRawRecord());
+		Assertions.assertFalse(reader.readRecord());
+		reader.close();
+	}
+
+	@Test
+	void test32() throws Exception {
+		String data = "\"Mac \"The Knife\" Peter\",\"Boswell, Jr.\"";
+
+		CsvReader reader = CsvReader.parse(data);
+		Assertions.assertTrue(reader.readRecord());
+		Assertions.assertEquals("Mac ", reader.get(0));
+		Assertions.assertEquals("Boswell, Jr.", reader.get(1));
+		Assertions.assertEquals(0L, reader.getCurrentRecord());
+		Assertions.assertEquals(2, reader.getColumnCount());
+		Assertions.assertEquals("\"Mac \"The Knife\" Peter\",\"Boswell, Jr.\"",
+				reader.getRawRecord());
 		Assertions.assertFalse(reader.readRecord());
 		reader.close();
 	}

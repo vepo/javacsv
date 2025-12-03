@@ -31,7 +31,7 @@ import java.nio.charset.Charset;
 /**
  * A stream based writer for writing delimited text data to a file or a stream.
  */
-public class CsvWriter {
+public class CsvWriter implements AutoCloseable {
 	private Writer outputStream = null;
 	
 	private String fileName = null;
@@ -85,7 +85,7 @@ public class CsvWriter {
 		}
 
 		this.fileName = fileName;
-		userSettings.Delimiter = delimiter;
+		userSettings.delimiter = delimiter;
 		this.charset = charset;
 	}
 
@@ -116,7 +116,7 @@ public class CsvWriter {
 		}
 
 		this.outputStream = outputStream;
-		userSettings.Delimiter = delimiter;
+		userSettings.delimiter = delimiter;
 		initialized = true;
 	}
 
@@ -142,7 +142,7 @@ public class CsvWriter {
 	 * @return The character being used as the column delimiter.
 	 */
 	public char getDelimiter() {
-		return userSettings.Delimiter;
+		return userSettings.delimiter;
 	}
 
 	/**
@@ -152,11 +152,11 @@ public class CsvWriter {
 	 *            The character to use as the column delimiter.
 	 */
 	public void setDelimiter(char delimiter) {
-		userSettings.Delimiter = delimiter;
+		userSettings.delimiter = delimiter;
 	}
 
 	public char getRecordDelimiter() {
-		return userSettings.RecordDelimiter;
+		return userSettings.recordDelimiter;
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class CsvWriter {
 	 */
 	public void setRecordDelimiter(char recordDelimiter) {
 		useCustomRecordDelimiter = true;
-		userSettings.RecordDelimiter = recordDelimiter;
+		userSettings.recordDelimiter = recordDelimiter;
 	}
 
 	/**
@@ -178,7 +178,7 @@ public class CsvWriter {
 	 * @return The character to use as a text qualifier in the data.
 	 */
 	public char getTextQualifier() {
-		return userSettings.TextQualifier;
+		return userSettings.textQualifier;
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class CsvWriter {
 	 *            The character to use as a text qualifier in the data.
 	 */
 	public void setTextQualifier(char textQualifier) {
-		userSettings.TextQualifier = textQualifier;
+		userSettings.textQualifier = textQualifier;
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class CsvWriter {
 	 * @return Whether text qualifiers will be used while writing data or not.
 	 */
 	public boolean getUseTextQualifier() {
-		return userSettings.UseTextQualifier;
+		return userSettings.useTextQualifier;
 	}
 
 	/**
@@ -207,23 +207,23 @@ public class CsvWriter {
 	 *            Whether to use a text qualifier while writing data or not.
 	 */
 	public void setUseTextQualifier(boolean useTextQualifier) {
-		userSettings.UseTextQualifier = useTextQualifier;
+		userSettings.useTextQualifier = useTextQualifier;
 	}
 
 	public int getEscapeMode() {
-		return userSettings.EscapeMode;
+		return userSettings.escapeMode;
 	}
 
 	public void setEscapeMode(int escapeMode) {
-		userSettings.EscapeMode = escapeMode;
+		userSettings.escapeMode = escapeMode;
 	}
 
 	public void setComment(char comment) {
-		userSettings.Comment = comment;
+		userSettings.comment = comment;
 	}
 
 	public char getComment() {
-		return userSettings.Comment;
+		return userSettings.comment;
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class CsvWriter {
 	 * @return Whether fields will be forced to be qualified or not.
 	 */
 	public boolean getForceQualifier() {
-		return userSettings.ForceQualifier;
+		return userSettings.forceQualifier;
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class CsvWriter {
 	 *            Whether to force the fields to be qualified or not.
 	 */
 	public void setForceQualifier(boolean forceQualifier) {
-		userSettings.ForceQualifier = forceQualifier;
+		userSettings.forceQualifier = forceQualifier;
 	}
 
 	/**
@@ -271,33 +271,33 @@ public class CsvWriter {
 		}
 
 		if (!firstColumn) {
-			outputStream.write(userSettings.Delimiter);
+			outputStream.write(userSettings.delimiter);
 		}
 
-		boolean textQualify = userSettings.ForceQualifier;
+		boolean textQualify = userSettings.forceQualifier;
 
 		if (!preserveSpaces && content.length() > 0) {
 			content = content.trim();
 		}
 
 		if (!textQualify
-				&& userSettings.UseTextQualifier
-				&& (content.indexOf(userSettings.TextQualifier) > -1
-						|| content.indexOf(userSettings.Delimiter) > -1
+				&& userSettings.useTextQualifier
+				&& (content.indexOf(userSettings.textQualifier) > -1
+						|| content.indexOf(userSettings.delimiter) > -1
 						|| (!useCustomRecordDelimiter && (content
 								.indexOf(Letters.LF) > -1 || content
 								.indexOf(Letters.CR) > -1))
 						|| (useCustomRecordDelimiter && content
-								.indexOf(userSettings.RecordDelimiter) > -1)
+								.indexOf(userSettings.recordDelimiter) > -1)
 						|| (firstColumn && content.length() > 0 && content
-								.charAt(0) == userSettings.Comment) ||
+								.charAt(0) == userSettings.comment) ||
 				// check for empty first column, which if on its own line must
 				// be qualified or the line will be skipped
 				(firstColumn && content.length() == 0))) {
 			textQualify = true;
 		}
 
-		if (userSettings.UseTextQualifier && !textQualify
+		if (userSettings.useTextQualifier && !textQualify
 				&& content.length() > 0 && preserveSpaces) {
 			char firstLetter = content.charAt(0);
 
@@ -315,41 +315,30 @@ public class CsvWriter {
 		}
 
 		if (textQualify) {
-			outputStream.write(userSettings.TextQualifier);
+			outputStream.write(userSettings.textQualifier);
 
-			if (userSettings.EscapeMode == ESCAPE_MODE_BACKSLASH) {
-				content = replace(content, "" + Letters.BACKSLASH, ""
-						+ Letters.BACKSLASH + Letters.BACKSLASH);
-				content = replace(content, "" + userSettings.TextQualifier, ""
-						+ Letters.BACKSLASH + userSettings.TextQualifier);
+			if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
+				content = replace(content, Letters.BACKSLASH_PATTERN, Letters.BACKSLASH_ESCAPED);
+				content = replace(content, "" + userSettings.textQualifier, "" + Letters.BACKSLASH + userSettings.textQualifier);
 			} else {
-				content = replace(content, "" + userSettings.TextQualifier, ""
-						+ userSettings.TextQualifier
-						+ userSettings.TextQualifier);
+				content = replace(content, "" + userSettings.textQualifier, "" + userSettings.textQualifier + userSettings.textQualifier);
 			}
-		} else if (userSettings.EscapeMode == ESCAPE_MODE_BACKSLASH) {
-			content = replace(content, "" + Letters.BACKSLASH, ""
-					+ Letters.BACKSLASH + Letters.BACKSLASH);
-			content = replace(content, "" + userSettings.Delimiter, ""
-					+ Letters.BACKSLASH + userSettings.Delimiter);
+		} else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
+			content = replace(content, Letters.BACKSLASH_PATTERN, Letters.BACKSLASH_ESCAPED);
+			content = replace(content, "" + userSettings.delimiter, "" + Letters.BACKSLASH + userSettings.delimiter);
 
 			if (useCustomRecordDelimiter) {
-				content = replace(content, "" + userSettings.RecordDelimiter,
-						"" + Letters.BACKSLASH + userSettings.RecordDelimiter);
+				content = replace(content, "" + userSettings.recordDelimiter, "" + Letters.BACKSLASH + userSettings.recordDelimiter);
 			} else {
-				content = replace(content, "" + Letters.CR, ""
-						+ Letters.BACKSLASH + Letters.CR);
-				content = replace(content, "" + Letters.LF, ""
-						+ Letters.BACKSLASH + Letters.LF);
+				content = replace(content, "" + Letters.CR, "" + Letters.BACKSLASH + Letters.CR);
+				content = replace(content, "" + Letters.LF, "" + Letters.BACKSLASH + Letters.LF);
 			}
 
-			if (firstColumn && content.length() > 0
-					&& content.charAt(0) == userSettings.Comment) {
+			if (firstColumn && content.length() > 0 && content.charAt(0) == userSettings.comment) {
 				if (content.length() > 1) {
-					content = "" + Letters.BACKSLASH + userSettings.Comment
-							+ content.substring(1);
+					content = "" + Letters.BACKSLASH + userSettings.comment + content.substring(1);
 				} else {
-					content = "" + Letters.BACKSLASH + userSettings.Comment;
+					content = "" + Letters.BACKSLASH + userSettings.comment;
 				}
 			}
 		}
@@ -357,7 +346,7 @@ public class CsvWriter {
 		outputStream.write(content);
 
 		if (textQualify) {
-			outputStream.write(userSettings.TextQualifier);
+			outputStream.write(userSettings.textQualifier);
 		}
 
 		firstColumn = false;
@@ -382,12 +371,12 @@ public class CsvWriter {
 
 		checkInit();
 
-		outputStream.write(userSettings.Comment);
+		outputStream.write(userSettings.comment);
 
 		outputStream.write(commentText);
 
 		if (useCustomRecordDelimiter) {
-			outputStream.write(userSettings.RecordDelimiter);
+			outputStream.write(userSettings.recordDelimiter);
 		} else {
 			outputStream.write(systemRecordDelimiter);
 		}
@@ -447,7 +436,7 @@ public class CsvWriter {
 		checkInit();
 
 		if (useCustomRecordDelimiter) {
-			outputStream.write(userSettings.RecordDelimiter);
+			outputStream.write(userSettings.recordDelimiter);
 		} else {
 			outputStream.write(systemRecordDelimiter);
 		}
@@ -483,6 +472,7 @@ public class CsvWriter {
 	/**
 	 * Closes and releases all related resources.
 	 */
+	@Override
 	public void close() {
 		if (!closed) {
 			close(true);
@@ -547,6 +537,8 @@ public class CsvWriter {
 		public static final char POUND = '#';
 
 		public static final char BACKSLASH = '\\';
+		public static final String BACKSLASH_PATTERN = "\\";
+		public static final String BACKSLASH_ESCAPED = "\\\\";
 
 		public static final char NULL = '\0';
 	}
@@ -554,28 +546,28 @@ public class CsvWriter {
 	private class UserSettings {
 		// having these as publicly accessible members will prevent
 		// the overhead of the method call that exists on properties
-		public char TextQualifier;
+		public char textQualifier;
 
-		public boolean UseTextQualifier;
+		public boolean useTextQualifier;
 
-		public char Delimiter;
+		public char delimiter;
 
-		public char RecordDelimiter;
+		public char recordDelimiter;
 
-		public char Comment;
+		public char comment;
 
-		public int EscapeMode;
+		public int escapeMode;
 
-		public boolean ForceQualifier;
+		public boolean forceQualifier;
 
 		public UserSettings() {
-			TextQualifier = Letters.QUOTE;
-			UseTextQualifier = true;
-			Delimiter = Letters.COMMA;
-			RecordDelimiter = Letters.NULL;
-			Comment = Letters.POUND;
-			EscapeMode = ESCAPE_MODE_DOUBLED;
-			ForceQualifier = false;
+			textQualifier = Letters.QUOTE;
+			useTextQualifier = true;
+			delimiter = Letters.COMMA;
+			recordDelimiter = Letters.NULL;
+			comment = Letters.POUND;
+			escapeMode = ESCAPE_MODE_DOUBLED;
+			forceQualifier = false;
 		}
 	}
 
@@ -584,7 +576,7 @@ public class CsvWriter {
 		int found = original.indexOf(pattern);
 
 		if (found > -1) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			int start = 0;
 
 			while (found != -1) {
