@@ -234,9 +234,9 @@ class CsvWriterTest {
         reader.userSettings().withTextQualifier('\'');
         Assertions.assertEquals('\'', reader.userSettings().textQualifier());
 
-        Assertions.assertTrue(reader.getTrimWhitespace());
-        reader.setTrimWhitespace(false);
-        Assertions.assertFalse(reader.getTrimWhitespace());
+        Assertions.assertTrue(reader.userSettings().trimWhitespace());
+        reader.userSettings().withTrimWhitespace(false);
+        Assertions.assertFalse(reader.userSettings().trimWhitespace());
 
         Assertions.assertFalse(reader.getUseComments());
         reader.setUseComments(true);

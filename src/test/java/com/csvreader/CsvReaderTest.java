@@ -214,7 +214,7 @@ class CsvReaderTest {
         String data = " 1";
 
         CsvReader reader = CsvReader.parse(data);
-        reader.setTrimWhitespace(false);
+        reader.userSettings().withTrimWhitespace(false);
         Assertions.assertTrue(reader.readRecord());
         Assertions.assertEquals(" 1", reader.get(0));
         Assertions.assertEquals(0L, reader.getCurrentRecord());

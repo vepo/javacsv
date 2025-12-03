@@ -12,9 +12,8 @@ public class UserSettings {
     private String delimiterEscaped;
 
     private EscapeMode escapeMode;
+    private boolean trimWhitespace;
 
-    public boolean caseSensitive;
-    public boolean trimWhitespace;
     public boolean useTextQualifier;
     public char recordDelimiter;
     public char comment;
@@ -25,7 +24,6 @@ public class UserSettings {
     public boolean forceQualifier;
 
     public UserSettings() {
-        caseSensitive = true;
         trimWhitespace = true;
         useTextQualifier = true;
         recordDelimiter = Letters.NULL;
@@ -102,6 +100,30 @@ public class UserSettings {
     public UserSettings withEscapeMode(EscapeMode escapeMode) {
         this.escapeMode = escapeMode;
         updateTextQualifier(textQualifier);
+        return this;
+    }
+
+    /**
+     * Gets whether leading and trailing whitespace characters are being trimmed
+     * from non-textqualified column data. Default is true.
+     * 
+     * @return Whether leading and trailing whitespace characters are being
+     *         trimmed from non-textqualified column data.
+     */
+    public boolean trimWhitespace() {
+        return trimWhitespace;
+    }
+
+    /**
+     * Sets whether leading and trailing whitespace characters should be trimmed
+     * from non-textqualified column data or not. Default is true.
+     * 
+     * @param trimWhitespace Whether leading and trailing whitespace characters
+     *                       should be trimmed from non-textqualified column data or
+     *                       not.
+     */
+    public UserSettings withTrimWhitespace(boolean trimWhitespace) {
+        this.trimWhitespace = trimWhitespace;
         return this;
     }
 

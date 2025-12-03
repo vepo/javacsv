@@ -185,29 +185,6 @@ public class CsvReader implements AutoCloseable {
         return rawRecord;
     }
 
-    /**
-     * Gets whether leading and trailing whitespace characters are being trimmed
-     * from non-textqualified column data. Default is true.
-     * 
-     * @return Whether leading and trailing whitespace characters are being
-     *         trimmed from non-textqualified column data.
-     */
-    public boolean getTrimWhitespace() {
-        return userSettings.trimWhitespace;
-    }
-
-    /**
-     * Sets whether leading and trailing whitespace characters should be trimmed
-     * from non-textqualified column data or not. Default is true.
-     * 
-     * @param trimWhitespace Whether leading and trailing whitespace characters
-     *                       should be trimmed from non-textqualified column data or
-     *                       not.
-     */
-    public void setTrimWhitespace(boolean trimWhitespace) {
-        userSettings.trimWhitespace = trimWhitespace;
-    }
-
     public UserSettings userSettings() {
         return userSettings;
     }
@@ -769,7 +746,7 @@ public class CsvReader implements AutoCloseable {
                         lastLetter = currentLetter;
 
                         skipLine();
-                    } else if (userSettings.trimWhitespace
+                    } else if (userSettings.trimWhitespace()
                             && (currentLetter == Letters.SPACE || currentLetter == Letters.TAB)) {
                         // do nothing, this will trim leading whitespace
                         // for both text qualified columns and non
@@ -1168,7 +1145,7 @@ public class CsvReader implements AutoCloseable {
                 if (dataBuffer.columnStart < dataBuffer.position) {
                     int lastLetter = dataBuffer.position - 1;
 
-                    if (userSettings.trimWhitespace && !startedWithQualifier) {
+                    if (userSettings.trimWhitespace() && !startedWithQualifier) {
                         while (lastLetter >= dataBuffer.columnStart && (dataBuffer.buffer[lastLetter] == Letters.SPACE
                                 || dataBuffer.buffer[lastLetter] == Letters.TAB)) {
                             lastLetter--;
@@ -1184,7 +1161,7 @@ public class CsvReader implements AutoCloseable {
 
                 int lastLetter = columnBuffer.position - 1;
 
-                if (userSettings.trimWhitespace && !startedWithQualifier) {
+                if (userSettings.trimWhitespace() && !startedWithQualifier) {
                     while (lastLetter >= 0 && (columnBuffer.buffer[lastLetter] == Letters.SPACE
                             || columnBuffer.buffer[lastLetter] == Letters.TAB)) {
                         lastLetter--;
