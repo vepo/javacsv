@@ -32,7 +32,6 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
-import java.util.HashMap;
 
 /**
  * A stream based parser for parsing delimited text data from a file or a
@@ -131,7 +130,7 @@ public class CsvReader implements AutoCloseable {
 		}
 
 		this.fileName = fileName;
-		this.userSettings.Delimiter = delimiter;
+		this.userSettings.delimiter = delimiter;
 		this.charset = charset;
 
 		isQualified = new boolean[values.length];
@@ -180,7 +179,7 @@ public class CsvReader implements AutoCloseable {
 		}
 
 		this.inputStream = inputStream;
-		this.userSettings.Delimiter = delimiter;
+		this.userSettings.delimiter = delimiter;
 		initialized = true;
 
 		isQualified = new boolean[values.length];
@@ -230,11 +229,11 @@ public class CsvReader implements AutoCloseable {
 	}
 
 	public boolean getCaptureRawRecord() {
-		return userSettings.CaptureRawRecord;
+		return userSettings.captureRawRecord;
 	}
 
 	public void setCaptureRawRecord(boolean captureRawRecord) {
-		userSettings.CaptureRawRecord = captureRawRecord;
+		userSettings.captureRawRecord = captureRawRecord;
 	}
 
 	public String getRawRecord() {
@@ -249,7 +248,7 @@ public class CsvReader implements AutoCloseable {
 	 *         trimmed from non-textqualified column data.
 	 */
 	public boolean getTrimWhitespace() {
-		return userSettings.TrimWhitespace;
+		return userSettings.trimWhitespace;
 	}
 
 	/**
@@ -261,7 +260,7 @@ public class CsvReader implements AutoCloseable {
 	 *            trimmed from non-textqualified column data or not.
 	 */
 	public void setTrimWhitespace(boolean trimWhitespace) {
-		userSettings.TrimWhitespace = trimWhitespace;
+		userSettings.trimWhitespace = trimWhitespace;
 	}
 
 	/**
@@ -271,7 +270,7 @@ public class CsvReader implements AutoCloseable {
 	 * @return The character being used as the column delimiter.
 	 */
 	public char getDelimiter() {
-		return userSettings.Delimiter;
+		return userSettings.delimiter;
 	}
 
 	/**
@@ -281,11 +280,11 @@ public class CsvReader implements AutoCloseable {
 	 *            The character to use as the column delimiter.
 	 */
 	public void setDelimiter(char delimiter) {
-		userSettings.Delimiter = delimiter;
+		userSettings.delimiter = delimiter;
 	}
 
 	public char getRecordDelimiter() {
-		return userSettings.RecordDelimiter;
+		return userSettings.recordDelimiter;
 	}
 
 	/**
@@ -298,7 +297,7 @@ public class CsvReader implements AutoCloseable {
 	 */
 	public void setRecordDelimiter(char recordDelimiter) {
 		useCustomRecordDelimiter = true;
-		userSettings.RecordDelimiter = recordDelimiter;
+		userSettings.recordDelimiter = recordDelimiter;
 	}
 
 	/**
@@ -307,7 +306,7 @@ public class CsvReader implements AutoCloseable {
 	 * @return The character to use as a text qualifier in the data.
 	 */
 	public char getTextQualifier() {
-		return userSettings.TextQualifier;
+		return userSettings.textQualifier;
 	}
 
 	/**
@@ -317,7 +316,7 @@ public class CsvReader implements AutoCloseable {
 	 *            The character to use as a text qualifier in the data.
 	 */
 	public void setTextQualifier(char textQualifier) {
-		userSettings.TextQualifier = textQualifier;
+		userSettings.textQualifier = textQualifier;
 	}
 
 	/**
@@ -326,7 +325,7 @@ public class CsvReader implements AutoCloseable {
 	 * @return Whether text qualifiers will be used while parsing or not.
 	 */
 	public boolean getUseTextQualifier() {
-		return userSettings.UseTextQualifier;
+		return userSettings.useTextQualifier;
 	}
 
 	/**
@@ -336,7 +335,7 @@ public class CsvReader implements AutoCloseable {
 	 *            Whether to use a text qualifier while parsing or not.
 	 */
 	public void setUseTextQualifier(boolean useTextQualifier) {
-		userSettings.UseTextQualifier = useTextQualifier;
+		userSettings.useTextQualifier = useTextQualifier;
 	}
 
 	/**
@@ -345,7 +344,7 @@ public class CsvReader implements AutoCloseable {
 	 * @return The character being used as a comment signal.
 	 */
 	public char getComment() {
-		return userSettings.Comment;
+		return userSettings.comment;
 	}
 
 	/**
@@ -355,7 +354,7 @@ public class CsvReader implements AutoCloseable {
 	 *            The character to use as a comment signal.
 	 */
 	public void setComment(char comment) {
-		userSettings.Comment = comment;
+		userSettings.comment = comment;
 	}
 
 	/**
@@ -364,7 +363,7 @@ public class CsvReader implements AutoCloseable {
 	 * @return Whether comments are being looked for while parsing or not.
 	 */
 	public boolean getUseComments() {
-		return userSettings.UseComments;
+		return userSettings.useComments;
 	}
 
 	/**
@@ -374,7 +373,7 @@ public class CsvReader implements AutoCloseable {
 	 *            Whether comments are being looked for while parsing or not.
 	 */
 	public void setUseComments(boolean useComments) {
-		userSettings.UseComments = useComments;
+		userSettings.useComments = useComments;
 	}
 
 	/**
@@ -385,7 +384,7 @@ public class CsvReader implements AutoCloseable {
 	 *         inside qualified data.
 	 */
 	public int getEscapeMode() {
-		return userSettings.EscapeMode;
+		return userSettings.escapeMode;
 	}
 
 	/**
@@ -405,15 +404,15 @@ public class CsvReader implements AutoCloseable {
 					"Parameter escapeMode must be a valid value.");
 		}
 
-		userSettings.EscapeMode = escapeMode;
+		userSettings.escapeMode = escapeMode;
 	}
 
 	public boolean getSkipEmptyRecords() {
-		return userSettings.SkipEmptyRecords;
+		return userSettings.skipEmptyRecords;
 	}
 
 	public void setSkipEmptyRecords(boolean skipEmptyRecords) {
-		userSettings.SkipEmptyRecords = skipEmptyRecords;
+		userSettings.skipEmptyRecords = skipEmptyRecords;
 	}
 
 	/**
@@ -427,7 +426,7 @@ public class CsvReader implements AutoCloseable {
 	 * @return The current setting of the safety switch.
 	 */
 	public boolean getSafetySwitch() {
-		return userSettings.SafetySwitch;
+		return userSettings.safetySwitch;
 	}
 
 	/**
@@ -441,7 +440,7 @@ public class CsvReader implements AutoCloseable {
 	 * @param safetySwitch
 	 */
 	public void setSafetySwitch(boolean safetySwitch) {
-		userSettings.SafetySwitch = safetySwitch;
+		userSettings.safetySwitch = safetySwitch;
 	}
 
 	/**
@@ -610,8 +609,8 @@ public class CsvReader implements AutoCloseable {
 
 					char currentLetter = dataBuffer.Buffer[dataBuffer.Position];
 
-					if (userSettings.UseTextQualifier
-							&& currentLetter == userSettings.TextQualifier) {
+					if (userSettings.useTextQualifier
+							&& currentLetter == userSettings.textQualifier) {
 						// this will be a text qualified column, so
 						// we need to set startedWithQualifier to make it
 						// enter the seperate branch to handle text
@@ -625,9 +624,9 @@ public class CsvReader implements AutoCloseable {
 						startedWithQualifier = true;
 						boolean lastLetterWasQualifier = false;
 
-						char escapeChar = userSettings.TextQualifier;
+						char escapeChar = userSettings.textQualifier;
 
-						if (userSettings.EscapeMode == ESCAPE_MODE_BACKSLASH) {
+						if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
 							escapeChar = Letters.BACKSLASH;
 						}
 
@@ -651,10 +650,10 @@ public class CsvReader implements AutoCloseable {
 								if (eatingTrailingJunk) {
 									dataBuffer.ColumnStart = dataBuffer.Position + 1;
 
-									if (currentLetter == userSettings.Delimiter) {
+									if (currentLetter == userSettings.delimiter) {
 										endColumn();
 									} else if ((!useCustomRecordDelimiter && (currentLetter == Letters.CR || currentLetter == Letters.LF))
-											|| (useCustomRecordDelimiter && currentLetter == userSettings.RecordDelimiter)) {
+											|| (useCustomRecordDelimiter && currentLetter == userSettings.recordDelimiter)) {
 										endColumn();
 
 										endRecord();
@@ -706,20 +705,20 @@ public class CsvReader implements AutoCloseable {
 									} else {
 										dataBuffer.ColumnStart = dataBuffer.Position + 1;
 									}
-								} else if (currentLetter == userSettings.TextQualifier) {
+								} else if (currentLetter == userSettings.textQualifier) {
 									if (lastLetterWasEscape) {
 										lastLetterWasEscape = false;
 										lastLetterWasQualifier = false;
 									} else {
 										updateCurrentValue();
 
-										if (userSettings.EscapeMode == ESCAPE_MODE_DOUBLED) {
+										if (userSettings.escapeMode == ESCAPE_MODE_DOUBLED) {
 											lastLetterWasEscape = true;
 										}
 
 										lastLetterWasQualifier = true;
 									}
-								} else if (userSettings.EscapeMode == ESCAPE_MODE_BACKSLASH
+								} else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH
 										&& lastLetterWasEscape) {
 									switch (currentLetter) {
 									case 'n':
@@ -805,10 +804,10 @@ public class CsvReader implements AutoCloseable {
 									lastLetterWasEscape = true;
 								} else {
 									if (lastLetterWasQualifier) {
-										if (currentLetter == userSettings.Delimiter) {
+										if (currentLetter == userSettings.delimiter) {
 											endColumn();
 										} else if ((!useCustomRecordDelimiter && (currentLetter == Letters.CR || currentLetter == Letters.LF))
-												|| (useCustomRecordDelimiter && currentLetter == userSettings.RecordDelimiter)) {
+												|| (useCustomRecordDelimiter && currentLetter == userSettings.recordDelimiter)) {
 											endColumn();
 
 											endRecord();
@@ -833,7 +832,7 @@ public class CsvReader implements AutoCloseable {
 								if (startedColumn) {
 									dataBuffer.Position++;
 
-									if (userSettings.SafetySwitch
+									if (userSettings.safetySwitch
 											&& dataBuffer.Position
 													- dataBuffer.ColumnStart
 													+ columnBuffer.Position > 100000) {
@@ -858,7 +857,7 @@ public class CsvReader implements AutoCloseable {
 							} // end else
 
 						} while (hasMoreData && startedColumn);
-					} else if (currentLetter == userSettings.Delimiter) {
+					} else if (currentLetter == userSettings.delimiter) {
 						// we encountered a column with no data, so
 						// just send the end column
 
@@ -866,10 +865,10 @@ public class CsvReader implements AutoCloseable {
 
 						endColumn();
 					} else if (useCustomRecordDelimiter
-							&& currentLetter == userSettings.RecordDelimiter) {
+							&& currentLetter == userSettings.recordDelimiter) {
 						// this will skip blank lines
 						if (startedColumn || columnsCount > 0
-								|| !userSettings.SkipEmptyRecords) {
+								|| !userSettings.skipEmptyRecords) {
 							endColumn();
 
 							endRecord();
@@ -883,7 +882,7 @@ public class CsvReader implements AutoCloseable {
 						// this will skip blank lines
 						if (startedColumn
 								|| columnsCount > 0
-								|| (!userSettings.SkipEmptyRecords && (currentLetter == Letters.CR || lastLetter != Letters.CR))) {
+								|| (!userSettings.skipEmptyRecords && (currentLetter == Letters.CR || lastLetter != Letters.CR))) {
 							endColumn();
 
 							endRecord();
@@ -892,15 +891,15 @@ public class CsvReader implements AutoCloseable {
 						}
 
 						lastLetter = currentLetter;
-					} else if (userSettings.UseComments && columnsCount == 0
-							&& currentLetter == userSettings.Comment) {
+					} else if (userSettings.useComments && columnsCount == 0
+							&& currentLetter == userSettings.comment) {
 						// encountered a comment character at the beginning of
 						// the line so just ignore the rest of the line
 
 						lastLetter = currentLetter;
 
 						skipLine();
-					} else if (userSettings.TrimWhitespace
+					} else if (userSettings.trimWhitespace
 							&& (currentLetter == Letters.SPACE || currentLetter == Letters.TAB)) {
 						// do nothing, this will trim leading whitespace
 						// for both text qualified columns and non
@@ -931,8 +930,8 @@ public class CsvReader implements AutoCloseable {
 									currentLetter = dataBuffer.Buffer[dataBuffer.Position];
 								}
 
-								if (!userSettings.UseTextQualifier
-										&& userSettings.EscapeMode == ESCAPE_MODE_BACKSLASH
+								if (!userSettings.useTextQualifier
+										&& userSettings.escapeMode == ESCAPE_MODE_BACKSLASH
 										&& currentLetter == Letters.BACKSLASH) {
 									if (lastLetterWasBackslash) {
 										lastLetterWasBackslash = false;
@@ -987,7 +986,7 @@ public class CsvReader implements AutoCloseable {
 									} else {
 										dataBuffer.ColumnStart = dataBuffer.Position + 1;
 									}
-								} else if (userSettings.EscapeMode == ESCAPE_MODE_BACKSLASH
+								} else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH
 										&& lastLetterWasBackslash) {
 									switch (currentLetter) {
 									case 'n':
@@ -1067,10 +1066,10 @@ public class CsvReader implements AutoCloseable {
 
 									lastLetterWasBackslash = false;
 								} else {
-									if (currentLetter == userSettings.Delimiter) {
+									if (currentLetter == userSettings.delimiter) {
 										endColumn();
 									} else if ((!useCustomRecordDelimiter && (currentLetter == Letters.CR || currentLetter == Letters.LF))
-											|| (useCustomRecordDelimiter && currentLetter == userSettings.RecordDelimiter)) {
+											|| (useCustomRecordDelimiter && currentLetter == userSettings.recordDelimiter)) {
 										endColumn();
 
 										endRecord();
@@ -1086,7 +1085,7 @@ public class CsvReader implements AutoCloseable {
 								if (startedColumn) {
 									dataBuffer.Position++;
 
-									if (userSettings.SafetySwitch
+									if (userSettings.safetySwitch
 											&& dataBuffer.Position
 													- dataBuffer.ColumnStart
 													+ columnBuffer.Position > 100000) {
@@ -1121,14 +1120,14 @@ public class CsvReader implements AutoCloseable {
 			// check to see if we hit the end of the file
 			// without processing the current record
 
-			if (startedColumn || lastLetter == userSettings.Delimiter) {
+			if (startedColumn || lastLetter == userSettings.delimiter) {
 				endColumn();
 
 				endRecord();
 			}
 		}
 
-		if (userSettings.CaptureRawRecord) {
+		if (userSettings.captureRawRecord) {
 			if (hasMoreData) {
 				if (rawBuffer.Position == 0) {
 					rawRecord = new String(dataBuffer.Buffer,
@@ -1173,7 +1172,7 @@ public class CsvReader implements AutoCloseable {
 
 		updateCurrentValue();
 
-		if (userSettings.CaptureRawRecord && dataBuffer.Count > 0) {
+		if (userSettings.captureRawRecord && dataBuffer.Count > 0) {
 			if (rawBuffer.Buffer.length - rawBuffer.Position < dataBuffer.Count
 					- dataBuffer.LineStart) {
 				int newLength = rawBuffer.Buffer.length
@@ -1302,7 +1301,7 @@ public class CsvReader implements AutoCloseable {
 				if (dataBuffer.ColumnStart < dataBuffer.Position) {
 					int lastLetter = dataBuffer.Position - 1;
 
-					if (userSettings.TrimWhitespace && !startedWithQualifier) {
+					if (userSettings.trimWhitespace && !startedWithQualifier) {
 						while (lastLetter >= dataBuffer.ColumnStart
 								&& (dataBuffer.Buffer[lastLetter] == Letters.SPACE || dataBuffer.Buffer[lastLetter] == Letters.TAB)) {
 							lastLetter--;
@@ -1318,7 +1317,7 @@ public class CsvReader implements AutoCloseable {
 
 				int lastLetter = columnBuffer.Position - 1;
 
-				if (userSettings.TrimWhitespace && !startedWithQualifier) {
+				if (userSettings.trimWhitespace && !startedWithQualifier) {
 					while (lastLetter >= 0
 							&& (columnBuffer.Buffer[lastLetter] == Letters.SPACE || columnBuffer.Buffer[lastLetter] == Letters.SPACE)) {
 						lastLetter--;
@@ -1334,7 +1333,7 @@ public class CsvReader implements AutoCloseable {
 
 		startedColumn = false;
 
-		if (columnsCount >= 100000 && userSettings.SafetySwitch) {
+		if (columnsCount >= 100000 && userSettings.safetySwitch) {
 			close();
 
 			throw new IOException(
@@ -1599,16 +1598,6 @@ public class CsvReader implements AutoCloseable {
 		close(false);
 	}
 
-	private class ComplexEscape {
-		private static final int UNICODE = 1;
-
-		private static final int OCTAL = 2;
-
-		private static final int DECIMAL = 3;
-
-		private static final int HEX = 4;
-	}
-
 	private static char hexToDec(char hex) {
 		char result;
 
@@ -1621,157 +1610,5 @@ public class CsvReader implements AutoCloseable {
 		}
 
 		return result;
-	}
-
-	private class DataBuffer {
-		public char[] Buffer;
-
-		public int Position;
-
-		// / <summary>
-		// / How much usable data has been read into the stream,
-		// / which will not always be as long as Buffer.Length.
-		// / </summary>
-		public int Count;
-
-		// / <summary>
-		// / The position of the cursor in the buffer when the
-		// / current column was started or the last time data
-		// / was moved out to the column buffer.
-		// / </summary>
-		public int ColumnStart;
-
-		public int LineStart;
-
-		public DataBuffer() {
-			Buffer = new char[StaticSettings.MAX_BUFFER_SIZE];
-			Position = 0;
-			Count = 0;
-			ColumnStart = 0;
-			LineStart = 0;
-		}
-	}
-
-	private class ColumnBuffer {
-		public char[] Buffer;
-
-		public int Position;
-
-		public ColumnBuffer() {
-			Buffer = new char[StaticSettings.INITIAL_COLUMN_BUFFER_SIZE];
-			Position = 0;
-		}
-	}
-
-	private class RawRecordBuffer {
-		public char[] Buffer;
-
-		public int Position;
-
-		public RawRecordBuffer() {
-			Buffer = new char[StaticSettings.INITIAL_COLUMN_BUFFER_SIZE
-					* StaticSettings.INITIAL_COLUMN_COUNT];
-			Position = 0;
-		}
-	}
-
-	private class Letters {
-		public static final char LF = '\n';
-
-		public static final char CR = '\r';
-
-		public static final char QUOTE = '"';
-
-		public static final char COMMA = ',';
-
-		public static final char SPACE = ' ';
-
-		public static final char TAB = '\t';
-
-		public static final char POUND = '#';
-
-		public static final char BACKSLASH = '\\';
-
-		public static final char NULL = '\0';
-
-		public static final char BACKSPACE = '\b';
-
-		public static final char FORM_FEED = '\f';
-
-		public static final char ESCAPE = '\u001B'; // ASCII/ANSI escape
-
-		public static final char VERTICAL_TAB = '\u000B';
-
-		public static final char ALERT = '\u0007';
-	}
-
-	private class UserSettings {
-		// having these as publicly accessible members will prevent
-		// the overhead of the method call that exists on properties
-		public boolean CaseSensitive;
-
-		public char TextQualifier;
-
-		public boolean TrimWhitespace;
-
-		public boolean UseTextQualifier;
-
-		public char Delimiter;
-
-		public char RecordDelimiter;
-
-		public char Comment;
-
-		public boolean UseComments;
-
-		public int EscapeMode;
-
-		public boolean SafetySwitch;
-
-		public boolean SkipEmptyRecords;
-
-		public boolean CaptureRawRecord;
-
-		public UserSettings() {
-			CaseSensitive = true;
-			TextQualifier = Letters.QUOTE;
-			TrimWhitespace = true;
-			UseTextQualifier = true;
-			Delimiter = Letters.COMMA;
-			RecordDelimiter = Letters.NULL;
-			Comment = Letters.POUND;
-			UseComments = false;
-			EscapeMode = CsvReader.ESCAPE_MODE_DOUBLED;
-			SafetySwitch = true;
-			SkipEmptyRecords = true;
-			CaptureRawRecord = true;
-		}
-	}
-
-	private class HeadersHolder {
-		public String[] Headers;
-
-		public int Length;
-
-		public HashMap<String, Integer> IndexByName;
-
-		public HeadersHolder() {
-			Headers = null;
-			Length = 0;
-			IndexByName = new HashMap<>();
-		}
-	}
-
-	private class StaticSettings {
-		// these are static instead of final so they can be changed in unit test
-		// isn't visible outside this class and is only accessed once during
-		// CsvReader construction
-		public static final int MAX_BUFFER_SIZE = 1024;
-
-		public static final int MAX_FILE_BUFFER_SIZE = 4 * 1024;
-
-		public static final int INITIAL_COLUMN_COUNT = 10;
-
-		public static final int INITIAL_COLUMN_BUFFER_SIZE = 50;
 	}
 }

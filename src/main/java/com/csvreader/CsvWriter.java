@@ -522,56 +522,6 @@ public class CsvWriter implements AutoCloseable {
 		close(false);
 	}
 
-	private class Letters {
-		public static final char LF = '\n';
-
-		public static final char CR = '\r';
-
-		public static final char QUOTE = '"';
-
-		public static final char COMMA = ',';
-
-		public static final char SPACE = ' ';
-
-		public static final char TAB = '\t';
-
-		public static final char POUND = '#';
-
-		public static final char BACKSLASH = '\\';
-		public static final String BACKSLASH_PATTERN = "\\";
-		public static final String BACKSLASH_ESCAPED = "\\\\";
-
-		public static final char NULL = '\0';
-	}
-
-	private class UserSettings {
-		// having these as publicly accessible members will prevent
-		// the overhead of the method call that exists on properties
-		public char textQualifier;
-
-		public boolean useTextQualifier;
-
-		public char delimiter;
-
-		public char recordDelimiter;
-
-		public char comment;
-
-		public int escapeMode;
-
-		public boolean forceQualifier;
-
-		public UserSettings() {
-			textQualifier = Letters.QUOTE;
-			useTextQualifier = true;
-			delimiter = Letters.COMMA;
-			recordDelimiter = Letters.NULL;
-			comment = Letters.POUND;
-			escapeMode = ESCAPE_MODE_DOUBLED;
-			forceQualifier = false;
-		}
-	}
-
 	public static String replace(String original, String pattern, String replace) {
 		final int len = pattern.length();
 		int found = original.indexOf(pattern);
