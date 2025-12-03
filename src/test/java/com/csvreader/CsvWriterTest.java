@@ -1551,14 +1551,14 @@ class CsvWriterTest {
 		CsvReader reader = new CsvReader(fail);
 		boolean exceptionThrown = false;
 
-		Assertions.assertFalse(fail.DisposeCalled);
+		Assertions.assertFalse(fail.disposeCalled);
 		try {
 			// need to test IO exception block logic while trying to read
 			reader.readRecord();
 		} catch (IOException ex) {
 			// make sure stream that caused exception
 			// has been sent a dispose call
-			Assertions.assertTrue(fail.DisposeCalled);
+			Assertions.assertTrue(fail.disposeCalled);
 			exceptionThrown = true;
 			Assertions.assertEquals("Read failed.", ex.getMessage());
 		} finally {
@@ -1573,22 +1573,6 @@ class CsvWriterTest {
 			reader.getHeaders();
 		} catch (Exception ex) {
 			assertException(new IOException("This instance of the CsvReader class has already been closed."), ex);
-		}
-	}
-
-	private class FailingReader extends Reader {
-		public boolean DisposeCalled = false;
-
-		public FailingReader() {
-			super("");
-		}
-
-		public int read(char[] buffer, int index, int count) throws IOException {
-			throw new IOException("Read failed.");
-		}
-
-		public void close() {
-			DisposeCalled = true;
 		}
 	}
 
