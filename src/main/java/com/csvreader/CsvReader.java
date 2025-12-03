@@ -1275,9 +1275,8 @@ public class CsvReader implements AutoCloseable {
                     int lastLetter = dataBuffer.position - 1;
 
                     if (userSettings.trimWhitespace && !startedWithQualifier) {
-                        while (lastLetter >= dataBuffer.columnStart
-                                && (dataBuffer.buffer[lastLetter] == Letters.SPACE
-                                        || dataBuffer.buffer[lastLetter] == Letters.TAB)) {
+                        while (lastLetter >= dataBuffer.columnStart && (dataBuffer.buffer[lastLetter] == Letters.SPACE
+                                || dataBuffer.buffer[lastLetter] == Letters.TAB)) {
                             lastLetter--;
                         }
                     }
@@ -1292,9 +1291,8 @@ public class CsvReader implements AutoCloseable {
                 int lastLetter = columnBuffer.position - 1;
 
                 if (userSettings.trimWhitespace && !startedWithQualifier) {
-                    while (lastLetter >= 0
-                            && (columnBuffer.buffer[lastLetter] == Letters.SPACE
-                                    || columnBuffer.buffer[lastLetter] == Letters.SPACE)) {
+                    while (lastLetter >= 0 && (columnBuffer.buffer[lastLetter] == Letters.SPACE
+                            || columnBuffer.buffer[lastLetter] == Letters.TAB)) {
                         lastLetter--;
                     }
                 }
