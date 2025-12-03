@@ -1,12 +1,12 @@
 package com.csvreader;
 
 public class ColumnBuffer {
-	public char[] Buffer;
+	public char[] buffer;
 
-	public int Position;
+	public int position;
 
 	public ColumnBuffer() {
-		Buffer = new char[StaticSettings.INITIAL_COLUMN_BUFFER_SIZE];
-		Position = 0;
+		buffer = new char[StaticSettings.INITIAL_COLUMN_BUFFER_SIZE];
+		position = 0;
 	}
 }

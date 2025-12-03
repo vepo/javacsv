@@ -1,13 +1,12 @@
 package com.csvreader;
 
 public class RawRecordBuffer {
-	public char[] Buffer;
+	public char[] buffer;
 
-	public int Position;
+	public int position;
 
 	public RawRecordBuffer() {
-		Buffer = new char[StaticSettings.INITIAL_COLUMN_BUFFER_SIZE
-				* StaticSettings.INITIAL_COLUMN_COUNT];
-		Position = 0;
+		buffer = new char[StaticSettings.INITIAL_COLUMN_BUFFER_SIZE * StaticSettings.INITIAL_COLUMN_COUNT];
+		position = 0;
 	}
 }

@@ -5,10 +5,7 @@ public class StaticSettings {
 	// isn't visible outside this class and is only accessed once during
 	// CsvReader construction
 	public static final int MAX_BUFFER_SIZE = 1024;
-
 	public static final int MAX_FILE_BUFFER_SIZE = 4 * 1024;
-
 	public static final int INITIAL_COLUMN_COUNT = 10;
-
 	public static final int INITIAL_COLUMN_BUFFER_SIZE = 50;
 }

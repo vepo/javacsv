@@ -3,15 +3,13 @@ package com.csvreader;
 import java.util.HashMap;
 
 public class HeadersHolder {
-	public String[] Headers;
-
-	public int Length;
-
-	public HashMap<String, Integer> IndexByName;
+	public String[] headers;
+	public int length;
+	public HashMap<String, Integer> indexByName;
 
 	public HeadersHolder() {
-		Headers = null;
-		Length = 0;
-		IndexByName = new HashMap<>();
+		headers = null;
+		length = 0;
+		indexByName = new HashMap<>();
 	}
 }
