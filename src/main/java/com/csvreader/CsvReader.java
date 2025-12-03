@@ -39,60 +39,36 @@ import java.text.NumberFormat;
  */
 public class CsvReader implements AutoCloseable {
     private Reader inputStream = null;
-
     private String fileName = null;
-
     // this holds all the values for switches that the user is allowed to set
-    private UserSettings userSettings = new UserSettings();
-
+    private final UserSettings userSettings;
     private Charset charset = null;
-
     private boolean useCustomRecordDelimiter = false;
-
     // this will be our working buffer to hold data chunks
     // read in from the data file
-
     private DataBuffer dataBuffer = new DataBuffer();
-
     private ColumnBuffer columnBuffer = new ColumnBuffer();
-
     private RawRecordBuffer rawBuffer = new RawRecordBuffer();
-
     private boolean[] isQualified = null;
-
     private String rawRecord = "";
-
     private HeadersHolder headersHolder = new HeadersHolder();
-
     // these are all more or less global loop variables
     // to keep from needing to pass them all into various
     // methods during parsing
-
     private boolean startedColumn = false;
-
     private boolean startedWithQualifier = false;
-
     private boolean hasMoreData = true;
-
     private char lastLetter = '\0';
-
     private boolean hasReadNextLine = false;
-
     private int columnsCount = 0;
-
     private long currentRecord = 0;
-
     private String[] values = new String[StaticSettings.INITIAL_COLUMN_COUNT];
-
     private boolean initialized = false;
-
     private boolean closed = false;
-
     /**
      * Double up the text qualifier to represent an occurance of the text qualifier.
      */
     public static final int ESCAPE_MODE_DOUBLED = 1;
-
     /**
      * Use a backslash character before the text qualifier to represent an occurance
      * of the text qualifier.
@@ -108,8 +84,7 @@ public class CsvReader implements AutoCloseable {
      * @param charset   The {@link java.nio.charset.Charset Charset} to use while
      *                  parsing the data.
      */
-    public CsvReader(String fileName, char delimiter, Charset charset)
-            throws FileNotFoundException {
+    public CsvReader(String fileName, char delimiter, Charset charset) throws FileNotFoundException {
         if (fileName == null) {
             throw new IllegalArgumentException("Parameter fileName can not be null.");
         }
@@ -123,7 +98,7 @@ public class CsvReader implements AutoCloseable {
         }
 
         this.fileName = fileName;
-        this.userSettings.delimiter = delimiter;
+        this.userSettings = new UserSettings().withDelimiter(delimiter);
         this.charset = charset;
 
         isQualified = new boolean[values.length];
@@ -137,8 +112,7 @@ public class CsvReader implements AutoCloseable {
      * @param fileName  The path to the file to use as the data source.
      * @param delimiter The character to use as the column delimiter.
      */
-    public CsvReader(String fileName, char delimiter)
-            throws FileNotFoundException {
+    public CsvReader(String fileName, char delimiter) throws FileNotFoundException {
         this(fileName, delimiter, StandardCharsets.ISO_8859_1);
     }
 
@@ -166,7 +140,7 @@ public class CsvReader implements AutoCloseable {
         }
 
         this.inputStream = inputStream;
-        this.userSettings.delimiter = delimiter;
+        this.userSettings = new UserSettings().withDelimiter(delimiter);
         initialized = true;
 
         isQualified = new boolean[values.length];
@@ -244,23 +218,8 @@ public class CsvReader implements AutoCloseable {
         userSettings.trimWhitespace = trimWhitespace;
     }
 
-    /**
-     * Gets the character being used as the column delimiter. Default is comma,
-     * ','.
-     * 
-     * @return The character being used as the column delimiter.
-     */
-    public char getDelimiter() {
-        return userSettings.delimiter;
-    }
-
-    /**
-     * Sets the character to use as the column delimiter. Default is comma, ','.
-     * 
-     * @param delimiter The character to use as the column delimiter.
-     */
-    public void setDelimiter(char delimiter) {
-        userSettings.delimiter = delimiter;
+    public UserSettings userSettings() {
+        return userSettings;
     }
 
     public char getRecordDelimiter() {
@@ -580,8 +539,7 @@ public class CsvReader implements AutoCloseable {
 
                     char currentLetter = dataBuffer.buffer[dataBuffer.position];
 
-                    if (userSettings.useTextQualifier
-                            && currentLetter == userSettings.textQualifier) {
+                    if (userSettings.useTextQualifier && currentLetter == userSettings.textQualifier) {
                         // this will be a text qualified column, so
                         // we need to set startedWithQualifier to make it
                         // enter the seperate branch to handle text
@@ -621,7 +579,7 @@ public class CsvReader implements AutoCloseable {
                                 if (eatingTrailingJunk) {
                                     dataBuffer.columnStart = dataBuffer.position + 1;
 
-                                    if (currentLetter == userSettings.delimiter) {
+                                    if (currentLetter == userSettings.delimiter()) {
                                         endColumn();
                                     } else if ((!useCustomRecordDelimiter
                                             && (currentLetter == Letters.CR || currentLetter == Letters.LF))
@@ -777,7 +735,7 @@ public class CsvReader implements AutoCloseable {
                                     lastLetterWasEscape = true;
                                 } else {
                                     if (lastLetterWasQualifier) {
-                                        if (currentLetter == userSettings.delimiter) {
+                                        if (currentLetter == userSettings.delimiter()) {
                                             endColumn();
                                         } else if ((!useCustomRecordDelimiter
                                                 && (currentLetter == Letters.CR || currentLetter == Letters.LF))
@@ -807,32 +765,26 @@ public class CsvReader implements AutoCloseable {
                                 if (startedColumn) {
                                     dataBuffer.position++;
 
-                                    if (userSettings.safetySwitch
-                                            && dataBuffer.position
-                                                    - dataBuffer.columnStart
-                                                    + columnBuffer.position > 100000) {
+                                    if (userSettings.safetySwitch && dataBuffer.position - dataBuffer.columnStart
+                                            + columnBuffer.position > 100000) {
                                         close();
 
-                                        throw new IOException(
-                                                "Maximum column length of 100,000 exceeded in column "
-                                                        + NumberFormat
-                                                                .getIntegerInstance()
-                                                                .format(
-                                                                        columnsCount)
-                                                        + " in record "
-                                                        + NumberFormat
-                                                                .getIntegerInstance()
-                                                                .format(
-                                                                        currentRecord)
-                                                        + ". Set the SafetySwitch property to false"
-                                                        + " if you're expecting column lengths greater than 100,000 characters to"
-                                                        + " avoid this error.");
+                                        throw new IOException("Maximum column length of 100,000 exceeded in column "
+                                                + NumberFormat.getIntegerInstance().format(columnsCount)
+                                                + " in record "
+                                                + NumberFormat
+                                                        .getIntegerInstance()
+                                                        .format(
+                                                                currentRecord)
+                                                + ". Set the SafetySwitch property to false"
+                                                + " if you're expecting column lengths greater than 100,000 characters to"
+                                                + " avoid this error.");
                                     }
                                 }
                             } // end else
 
                         } while (hasMoreData && startedColumn);
-                    } else if (currentLetter == userSettings.delimiter) {
+                    } else if (currentLetter == userSettings.delimiter()) {
                         // we encountered a column with no data, so
                         // just send the end column
 
@@ -1042,7 +994,7 @@ public class CsvReader implements AutoCloseable {
 
                                     lastLetterWasBackslash = false;
                                 } else {
-                                    if (currentLetter == userSettings.delimiter) {
+                                    if (currentLetter == userSettings.delimiter()) {
                                         endColumn();
                                     } else if ((!useCustomRecordDelimiter
                                             && (currentLetter == Letters.CR || currentLetter == Letters.LF))
@@ -1098,7 +1050,7 @@ public class CsvReader implements AutoCloseable {
             // check to see if we hit the end of the file
             // without processing the current record
 
-            if (startedColumn || lastLetter == userSettings.delimiter) {
+            if (startedColumn || lastLetter == userSettings.delimiter()) {
                 endColumn();
 
                 endRecord();

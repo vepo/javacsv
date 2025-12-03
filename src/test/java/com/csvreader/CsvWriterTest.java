@@ -27,7 +27,6 @@ class CsvWriterTest {
 		Assertions.assertEquals(expected.getMessage(), actual.getMessage());
 	}
 
-
 	private static String generateString(char letter, int count) {
 		StringBuilder buffer = new StringBuilder(count);
 		for (int i = 0; i < count; i++) {
@@ -36,31 +35,32 @@ class CsvWriterTest {
 		return buffer.toString();
 	}
 
-    @BeforeAll
-    static void setup() {
-        // this library was developed in Window
-        System.setProperty("line.separator", "\r\n");
-    }
+	@BeforeAll
+	static void setup() {
+		// this library was developed in Window
+		System.setProperty("line.separator", "\r\n");
+	}
 
-    @Test
+	@Test
 	void test31() throws Exception {
-		try(CsvWriter writer = new CsvWriter(new PrintWriter(
-                    new OutputStreamWriter(new FileOutputStream("temp.csv"),
-                            Charset.forName("UTF-8"))), ',')){
-            // writer will trim all whitespace and put this in quotes to preserve
-            // it's existence
-            writer.write(" \t \t");
-        }
+		try (CsvWriter writer = new CsvWriter(new PrintWriter(
+				new OutputStreamWriter(new FileOutputStream("temp.csv"),
+						Charset.forName("UTF-8"))),
+				',')) {
+			// writer will trim all whitespace and put this in quotes to preserve
+			// it's existence
+			writer.write(" \t \t");
+		}
 
-		try(CsvReader reader = new CsvReader(new InputStreamReader(
-                    new FileInputStream("temp.csv"), Charset.forName("UTF-8")))) {
-            Assertions.assertTrue(reader.readRecord());
-            Assertions.assertEquals("", reader.get(0));
-            Assertions.assertEquals(1, reader.getColumnCount());
-            Assertions.assertEquals(0L, reader.getCurrentRecord());
-            Assertions.assertEquals("\"\"", reader.getRawRecord());
-            Assertions.assertFalse(reader.readRecord());
-        }
+		try (CsvReader reader = new CsvReader(new InputStreamReader(
+				new FileInputStream("temp.csv"), Charset.forName("UTF-8")))) {
+			Assertions.assertTrue(reader.readRecord());
+			Assertions.assertEquals("", reader.get(0));
+			Assertions.assertEquals(1, reader.getColumnCount());
+			Assertions.assertEquals(0L, reader.getCurrentRecord());
+			Assertions.assertEquals("\"\"", reader.getRawRecord());
+			Assertions.assertFalse(reader.readRecord());
+		}
 
 		new File("temp.csv").delete();
 	}
@@ -1039,7 +1039,8 @@ class CsvWriterTest {
 	@Test
 	void test113() throws Exception {
 		try {
-			new CsvWriter("test.csv", ',', (Charset) null);
+			CsvWriter writer = new CsvWriter("test.csv", ',', (Charset) null);
+			writer.close();
 		} catch (Exception ex) {
 			assertException(new IllegalArgumentException("Parameter charset can not be null."), ex);
 		}
@@ -1048,7 +1049,8 @@ class CsvWriterTest {
 	@Test
 	void test114() throws Exception {
 		try {
-			new CsvWriter((Writer) null, ',');
+			CsvWriter writer = new CsvWriter((Writer) null, ',');
+			writer.close();
 		} catch (Exception ex) {
 			assertException(new IllegalArgumentException("Parameter outputStream can not be null."), ex);
 		}
@@ -1136,9 +1138,9 @@ class CsvWriterTest {
 		writer.write("3");
 		writer.endRecord();
 
-		Assertions.assertEquals(',', writer.getDelimiter());
-		writer.setDelimiter('\t');
-		Assertions.assertEquals('\t', writer.getDelimiter());
+		Assertions.assertEquals(',', writer.userSettings().delimiter());
+		writer.userSettings().withDelimiter('\t');
+		Assertions.assertEquals('\t', writer.userSettings().delimiter());
 
 		writer.write("1,2");
 		writer.write("3");
@@ -1281,19 +1283,18 @@ class CsvWriterTest {
 		byte[] buffer;
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		CsvWriter writer = new CsvWriter(stream, ',', Charset
-				.forName("ISO-8859-1"));
-		writer.setUseTextQualifier(false);
-		writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+		try (CsvWriter writer = new CsvWriter(stream, ',', Charset.forName("ISO-8859-1"))) {
+			writer.setUseTextQualifier(false);
+			writer.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
 
-		writer.write("1,\\\r\n2");
-		writer.endRecord();
+			writer.write("1,\\\r\n2");
+			writer.endRecord();
 
-		writer.setRecordDelimiter(';');
+			writer.setRecordDelimiter(';');
 
-		writer.write("1,\\;2");
-		writer.endRecord();
-		writer.close();
+			writer.write("1,\\;2");
+			writer.endRecord();
+		}
 
 		buffer = stream.toByteArray();
 		stream.close();
@@ -1452,13 +1453,12 @@ class CsvWriterTest {
 	void test143() throws Exception {
 		CsvReader reader = CsvReader.parse("\"" + generateString('a', 100001)
 				+ "\"");
-		try
-		{
+		try {
 			reader.readRecord();
-		}
-		catch (Exception ex)
-		{
-			assertException(new IOException("Maximum column length of 100,000 exceeded in column 0 in record 0. Set the SafetySwitch property to false if you're expecting column lengths greater than 100,000 characters to avoid this error."), ex);
+		} catch (Exception ex) {
+			assertException(new IOException(
+					"Maximum column length of 100,000 exceeded in column 0 in record 0. Set the SafetySwitch property to false if you're expecting column lengths greater than 100,000 characters to avoid this error."),
+					ex);
 		}
 		reader.close();
 	}
@@ -1537,12 +1537,9 @@ class CsvWriterTest {
 
 	@Test
 	void test149() throws Exception {
-		try
-		{
+		try {
 			new CsvReader("C:\\somefilethatdoesntexist.csv");
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			assertException(new FileNotFoundException("File C:\\somefilethatdoesntexist.csv does not exist."), ex);
 		}
 	}
@@ -1572,12 +1569,9 @@ class CsvWriterTest {
 
 		// test to make sure object has been marked
 		// internally as disposed
-		try
-		{
+		try {
 			reader.getHeaders();
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			assertException(new IOException("This instance of the CsvReader class has already been closed."), ex);
 		}
 	}
@@ -1597,24 +1591,23 @@ class CsvWriterTest {
 			DisposeCalled = true;
 		}
 	}
-	
+
 	@Test
 	void Test174() throws IOException {
 		// verifies that data is eventually automatically flushed
 		CsvWriter writer = new CsvWriter("temp.csv");
-		
-		for (int i = 0; i < 10000; i++)
-		{
+
+		for (int i = 0; i < 10000; i++) {
 			writer.write("stuff");
 			writer.endRecord();
 		}
-		
+
 		CsvReader reader = new CsvReader("temp.csv");
-		
+
 		Assertions.assertTrue(reader.readRecord());
-		
+
 		Assertions.assertEquals("stuff", reader.get(0));
-		
+
 		writer.close();
 		reader.close();
 

@@ -34,22 +34,15 @@ import java.nio.charset.StandardCharsets;
  */
 public class CsvWriter implements AutoCloseable {
     private Writer outputStream = null;
-
     private String fileName = null;
-
     private boolean firstColumn = true;
-
     private boolean useCustomRecordDelimiter = false;
-
     private Charset charset = null;
 
     // this holds all the values for switches that the user is allowed to set
-    private UserSettings userSettings = new UserSettings();
-
+    private final UserSettings userSettings;
     private boolean initialized = false;
-
     private boolean closed = false;
-
     private String systemRecordDelimiter = System.getProperty("line.separator");
 
     /**
@@ -84,7 +77,7 @@ public class CsvWriter implements AutoCloseable {
         }
 
         this.fileName = fileName;
-        userSettings.delimiter = delimiter;
+        this.userSettings = new UserSettings().withDelimiter(delimiter);
         this.charset = charset;
     }
 
@@ -112,7 +105,7 @@ public class CsvWriter implements AutoCloseable {
         }
 
         this.outputStream = outputStream;
-        userSettings.delimiter = delimiter;
+        this.userSettings = new UserSettings().withDelimiter(delimiter);
         initialized = true;
     }
 
@@ -129,22 +122,8 @@ public class CsvWriter implements AutoCloseable {
         this(new OutputStreamWriter(outputStream, charset), delimiter);
     }
 
-    /**
-     * Gets the character being used as the column delimiter.
-     * 
-     * @return The character being used as the column delimiter.
-     */
-    public char getDelimiter() {
-        return userSettings.delimiter;
-    }
-
-    /**
-     * Sets the character to use as the column delimiter.
-     * 
-     * @param delimiter The character to use as the column delimiter.
-     */
-    public void setDelimiter(char delimiter) {
-        userSettings.delimiter = delimiter;
+    public UserSettings userSettings() {
+        return userSettings;
     }
 
     public char getRecordDelimiter() {
@@ -257,36 +236,27 @@ public class CsvWriter implements AutoCloseable {
         }
 
         if (!firstColumn) {
-            outputStream.write(userSettings.delimiter);
+            outputStream.write(userSettings.delimiter());
         }
 
         boolean textQualify = userSettings.forceQualifier;
 
-        if (!preserveSpaces && content.length() > 0) {
+        if (!preserveSpaces && !content.isEmpty()) {
             content = content.trim();
         }
 
-        if (!textQualify
-                && userSettings.useTextQualifier
-                && (content.indexOf(userSettings.textQualifier) > -1
-                        || content.indexOf(userSettings.delimiter) > -1
-                        || (!useCustomRecordDelimiter && (content
-                                .indexOf(Letters.LF) > -1
-                                || content
-                                        .indexOf(Letters.CR) > -1))
-                        || (useCustomRecordDelimiter && content
-                                .indexOf(userSettings.recordDelimiter) > -1)
-                        || (firstColumn && content.length() > 0 && content
-                                .charAt(0) == userSettings.comment)
-                        ||
-                        // check for empty first column, which if on its own line must
-                        // be qualified or the line will be skipped
-                        (firstColumn && content.length() == 0))) {
+        if (!textQualify && userSettings.useTextQualifier && (content.indexOf(userSettings.textQualifier) > -1
+                || content.indexOf(userSettings.delimiter()) > -1
+                || (!useCustomRecordDelimiter && (content.indexOf(Letters.LF) > -1 || content.indexOf(Letters.CR) > -1))
+                || (useCustomRecordDelimiter && content.indexOf(userSettings.recordDelimiter) > -1)
+                || (firstColumn && !content.isEmpty() && content.charAt(0) == userSettings.comment) ||
+                // check for empty first column, which if on its own line must
+                // be qualified or the line will be skipped
+                (firstColumn && content.isEmpty()))) {
             textQualify = true;
         }
 
-        if (userSettings.useTextQualifier && !textQualify
-                && content.length() > 0 && preserveSpaces) {
+        if (userSettings.useTextQualifier && !textQualify && !content.isEmpty() && preserveSpaces) {
             char firstLetter = content.charAt(0);
 
             if (firstLetter == Letters.SPACE || firstLetter == Letters.TAB) {
@@ -315,7 +285,7 @@ public class CsvWriter implements AutoCloseable {
             }
         } else if (userSettings.escapeMode == ESCAPE_MODE_BACKSLASH) {
             content = replace(content, Letters.BACKSLASH_PATTERN, Letters.BACKSLASH_ESCAPED);
-            content = replace(content, "" + userSettings.delimiter, "" + Letters.BACKSLASH + userSettings.delimiter);
+            content = replace(content, userSettings.delimiterPattern(), userSettings.delimiterEscaped());
 
             if (useCustomRecordDelimiter) {
                 content = replace(content, "" + userSettings.recordDelimiter,
@@ -325,7 +295,7 @@ public class CsvWriter implements AutoCloseable {
                 content = replace(content, "" + Letters.LF, "" + Letters.BACKSLASH + Letters.LF);
             }
 
-            if (firstColumn && content.length() > 0 && content.charAt(0) == userSettings.comment) {
+            if (firstColumn && !content.isEmpty() && content.charAt(0) == userSettings.comment) {
                 if (content.length() > 1) {
                     content = "" + Letters.BACKSLASH + userSettings.comment + content.substring(1);
                 } else {
