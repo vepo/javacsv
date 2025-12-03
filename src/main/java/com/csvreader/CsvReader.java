@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.HashMap;
 
@@ -148,7 +149,7 @@ public class CsvReader implements AutoCloseable {
 	 */
 	public CsvReader(String fileName, char delimiter)
 			throws FileNotFoundException {
-		this(fileName, delimiter, Charset.forName("ISO-8859-1"));
+		this(fileName, delimiter, StandardCharsets.ISO_8859_1);
 	}
 
 	/**

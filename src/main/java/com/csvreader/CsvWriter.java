@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A stream based writer for writing delimited text data to a file or a stream.
@@ -98,7 +99,7 @@ public class CsvWriter implements AutoCloseable {
 	 *            The path to the file to output the data.
 	 */
 	public CsvWriter(String fileName) {
-		this(fileName, Letters.COMMA, Charset.forName("ISO-8859-1"));
+		this(fileName, Letters.COMMA, StandardCharsets.ISO_8859_1);
 	}
 
 	/**
